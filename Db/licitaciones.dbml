@@ -1,0 +1,87 @@
+///////////////////////////////////////////////////////////
+// Modelo: Sistema de análisis y flags de licitaciones
+// Motor: PostgreSQL (con pgvector para embeddings)
+// 
+///////////////////////////////////////////////////////////
+
+Project licitaciones_analysis {
+  database_type: 'PostgreSQL'
+  Note: 'Esquema para análisis de licitaciones con flags automáticos y conexión a LLM.'
+}
+
+///////////////////////////////////////////////////////////
+// Tabla principal de licitaciones
+///////////////////////////////////////////////////////////
+Table licitacion {
+  id SERIAL [pk, note: 'Identificador único de la licitación']
+  entidad VARCHAR(255) [not null, note: 'Entidad que publica la licitación']
+  objeto TEXT [note: 'Objeto contractual']
+  cuantia NUMERIC(18,2) [note: 'Valor de la licitación']
+  modalidad VARCHAR(255)
+  numero VARCHAR(255)
+  estado VARCHAR(100)
+  fecha_public DATE
+  ubicacion VARCHAR(255)
+  act_econ VARCHAR(255) [note: 'Actividad económica']
+  enlace TEXT
+  portal_origen VARCHAR(255)
+
+  embedding TEXT [note: 'Campo vectorial (pgvector) — texto de referencia del embedding']
+  texto_indexado TEXT [note: 'Texto usado para generar el embedding']
+
+  Note: 'Tabla principal de licitaciones a analizar.'
+}
+
+///////////////////////////////////////////////////////////
+// Tabla de tipos de flags
+///////////////////////////////////////////////////////////
+Table flags {
+  id SERIAL [pk]
+  codigo VARCHAR(10) [unique, note: 'Ejemplo: red1, red2, ...']
+  nombre VARCHAR(255)
+  descripcion TEXT
+  Note: 'Catálogo de tipos de banderas (flags) de riesgo o anomalía.'
+}
+
+///////////////////////////////////////////////////////////
+// Asociación entre licitaciones y flags detectados
+///////////////////////////////////////////////////////////
+Table flags_licitaciones {
+  id SERIAL [pk]
+  licitacion_id INT [ref: > licitacion.id, not null]
+  flag_id INT [ref: > flags.id, not null]
+  valor BOOLEAN [default: false, note: 'Indica si el flag está activo']
+  fecha_detectado TIMESTAMP [default: `now()`, note: 'Fecha en que se detectó el flag']
+  comentario TEXT [note: 'Motivo o contexto del flag']
+  fuente TEXT [note: 'Origen: modelo_llm, script, analista, etc.']
+
+  Note: 'Asocia una licitación con los flags que se detectaron.'
+}
+
+///////////////////////////////////////////////////////////
+// Log de cambios de flags (auditoría)
+///////////////////////////////////////////////////////////
+Table flags_log {
+  id SERIAL [pk]
+  flags_licitaciones_id INT [ref: > flags_licitaciones.id]
+  cambio TEXT [note: 'Descripción del cambio o evento registrado']
+  fecha TIMESTAMP [default: `now()`]
+  usuario TEXT [note: 'Usuario o proceso que realizó el cambio']
+
+  Note: 'Registro histórico de cambios sobre flags_licitaciones.'
+}
+
+///////////////////////////////////////////////////////////
+// Vista o banco consolidado (referencia conceptual)
+///////////////////////////////////////////////////////////
+Table banco_flagueado {
+  licitacion_id INT [ref: > licitacion.id]
+  entidad VARCHAR(255)
+  objeto TEXT
+  flag_codigo VARCHAR(10) [ref: > flags.codigo]
+  valor BOOLEAN
+  fecha_detectado TIMESTAMP
+  comentario TEXT
+
+  Note: 'Vista materializada o tabla derivada para consultas rápidas de flags activos.'
+}

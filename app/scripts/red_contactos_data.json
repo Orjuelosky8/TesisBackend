@@ -1,0 +1,232 @@
+{
+  "personas": [
+    {
+      "id": "P001",
+      "nombre": "MARIA FERNANDA ROJAS",
+      "entidad": "SECRETARIA DE EDUCACION DEL DISTRITO",
+      "ent_publica": true,
+      "es_contratista": false,
+      "trabajos": [
+        {
+          "cargo": "Directora TIC",
+          "entidad": "SECRETARIA DE EDUCACION DEL DISTRITO",
+          "anio_inicio": 2023,
+          "anio_fin": null,
+          "descripcion": "Miembro del comité de contratación de TI."
+        }
+      ],
+      "conexiones": [
+        {
+          "id": "P002",
+          "tipo": "mismo_comite",
+          "fuente": "acta_comite_2024_02"
+        },
+        {
+          "nombre": "TECHSERVICES S.A.S.",
+          "tipo": "proveedor_recurrente",
+          "fuente": "secop_hist"
+        }
+      ]
+    },
+    {
+      "id": "P002",
+      "nombre": "CARLOS ANDRES BELTRAN",
+      "entidad": "ALCALDIA MAYOR DE BOGOTA",
+      "ent_publica": true,
+      "es_contratista": false,
+      "trabajos": [
+        {
+          "cargo": "Profesional Universitario",
+          "entidad": "ALCALDIA MAYOR DE BOGOTA",
+          "anio_inicio": 2022,
+          "anio_fin": null,
+          "descripcion": "Revisión de cronogramas y pliegos."
+        }
+      ],
+      "conexiones": [
+        {
+          "id": "P001",
+          "tipo": "mismo_comite",
+          "fuente": "acta_comite_2024_02"
+        },
+        {
+          "id": "P004",
+          "tipo": "jefe_inmediato",
+          "fuente": "hoja_vida"
+        }
+      ]
+    },
+    {
+      "id": "P003",
+      "nombre": "LINA ROCIO MENDOZA",
+      "entidad": "FONDO FINANCIERO DISTRITAL",
+      "ent_publica": true,
+      "es_contratista": false,
+      "trabajos": [
+        {
+          "cargo": "Analista de contratación",
+          "entidad": "FONDO FINANCIERO DISTRITAL",
+          "anio_inicio": 2021,
+          "anio_fin": 2024,
+          "descripcion": "Cruce de proponentes y verificaciones de RF."
+        }
+      ],
+      "conexiones": [
+        {
+          "nombre": "CONSORCIO INFRA 2024",
+          "tipo": "proponente_reincidente",
+          "fuente": "secop_analisis"
+        }
+      ]
+    },
+    {
+      "id": "P004",
+      "nombre": "JORGE ENRIQUE CASTAÑO",
+      "entidad": "SECRETARIA GENERAL",
+      "ent_publica": true,
+      "es_contratista": false,
+      "trabajos": [
+        {
+          "cargo": "Subdirector Administrativo",
+          "entidad": "SECRETARIA GENERAL",
+          "anio_inicio": 2020,
+          "anio_fin": null,
+          "descripcion": "Aprueba estudios previos y ordena gasto."
+        }
+      ],
+      "conexiones": [
+        {
+          "id": "P002",
+          "tipo": "subalterno",
+          "fuente": "hoja_vida"
+        }
+      ]
+    },
+    {
+      "id": "P005",
+      "nombre": "ANDREA PAOLA HERRERA",
+      "entidad": "HOSPITAL DE SUBA E.S.E.",
+      "ent_publica": true,
+      "es_contratista": false,
+      "trabajos": [
+        {
+          "cargo": "Profesional de apoyo contratación",
+          "entidad": "HOSPITAL DE SUBA E.S.E.",
+          "anio_inicio": 2024,
+          "anio_fin": null,
+          "descripcion": "Procesos de medicamentos y dotación."
+        }
+      ],
+      "conexiones": [
+        {
+          "nombre": "SUMINISTROS MEDICOS DEL NORTE SAS",
+          "tipo": "proveedor_recurrente",
+          "fuente": "hist_clinicos"
+        }
+      ]
+    },
+    {
+      "id": "P006",
+      "nombre": "DIEGO ALEJANDRO CEPEDA",
+      "entidad": "SECRETARIA DE SALUD",
+      "ent_publica": true,
+      "es_contratista": false,
+      "trabajos": [
+        {
+          "cargo": "Apoyo jurídico",
+          "entidad": "SECRETARIA DE SALUD",
+          "anio_inicio": 2022,
+          "anio_fin": null,
+          "descripcion": "Revisión de garantías y pólizas."
+        }
+      ],
+      "conexiones": []
+    },
+    {
+      "id": "P007",
+      "nombre": "PAULA ANDREA BERNAL",
+      "entidad": "INSTITUTO DE RECREACION Y DEPORTE",
+      "ent_publica": true,
+      "es_contratista": false,
+      "trabajos": [
+        {
+          "cargo": "Profesional especializado",
+          "entidad": "IDRD",
+          "anio_inicio": 2019,
+          "anio_fin": null,
+          "descripcion": "Contratos de obra menor y servicios."
+        }
+      ],
+      "conexiones": [
+        {
+          "nombre": "CONSTRUOBRAS BOGOTA SAS",
+          "tipo": "contratista_frecuente",
+          "fuente": "secop_hist"
+        }
+      ]
+    },
+    {
+      "id": "P008",
+      "nombre": "RICARDO JOSE MEJIA",
+      "entidad": "UNIDAD ADMINISTRATIVA ESPECIAL",
+      "ent_publica": true,
+      "es_contratista": false,
+      "trabajos": [],
+      "conexiones": [
+        {
+          "id": "P003",
+          "tipo": "coincidencia_nit_proveedor",
+          "fuente": "cruce_secop"
+        }
+      ]
+    },
+    {
+      "id": "P009",
+      "nombre": "KAREN JULIETH SUAREZ",
+      "entidad": "ALCALDIA LOCAL DE ENGATIVA",
+      "ent_publica": true,
+      "es_contratista": false,
+      "trabajos": [
+        {
+          "cargo": "Apoyo logística contractual",
+          "entidad": "ALCALDIA LOCAL DE ENGATIVA",
+          "anio_inicio": 2023,
+          "anio_fin": null,
+          "descripcion": "Publicación de avisos y cronogramas."
+        }
+      ],
+      "conexiones": []
+    },
+    {
+      "id": "P010",
+      "nombre": "LUIS EDUARDO FONSECA",
+      "entidad": "UNIVERSIDAD DISTRITAL",
+      "ent_publica": true,
+      "es_contratista": false,
+      "trabajos": [
+        {
+          "cargo": "Asesor contratación",
+          "entidad": "UNIVERSIDAD DISTRITAL",
+          "anio_inicio": 2021,
+          "anio_fin": null,
+          "descripcion": "Asesor de la mesa técnica de compras."
+        }
+      ],
+      "conexiones": [
+        {
+          "id": "P001",
+          "tipo": "mesa_tecnica",
+          "fuente": "acta_mesa_2024_05"
+        }
+      ]
+    }
+  ],
+  "contratistas": [
+    "TECHSERVICES S.A.S.",
+    "CONSORCIO INFRA 2024",
+    "SUMINISTROS MEDICOS DEL NORTE SAS",
+    "CONSTRUOBRAS BOGOTA SAS",
+    "SOLUCIONES TECNOLOGICAS SAS",
+    "INFORMATICA Y SISTEMAS DE COLOMBIA LTDA"
+  ]
+}

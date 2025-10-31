@@ -1,0 +1,16 @@
+{
+  "files.associations": { "*.sql": "sql" },
+  "[sql]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null,
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "never",
+    "source.organizeImports": "never"
+  },
+  "sqlfluff.linter.run": "never",
+  "sqlfluff.format.executeInPlace": false
+}

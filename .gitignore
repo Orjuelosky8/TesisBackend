@@ -1,0 +1,10 @@
+app/scripts/datos_normalizados_final.xlsx
+app/scripts/Secop_02.xlsx
+backups/
+*.dump
+*.bak
+*.backup
+*.tar
+*.gz
+*.7z
+*.zip

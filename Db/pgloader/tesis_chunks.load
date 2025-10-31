@@ -1,0 +1,13 @@
+LOAD DATABASE
+  FROM sqlite:///data/tesis_chunks.db
+  INTO postgresql://postgres:Strong!Passw0rd1@db:5432/licita_db
+
+WITH
+  create tables,
+  create indexes,
+  reset sequences,
+  workers = 4,
+  concurrency = 1,
+  batch rows = 50000
+
+ALTER TABLE NAMES MATCHING ~/^.*$/ IN SCHEMA 'main' SET SCHEMA 'staging';
