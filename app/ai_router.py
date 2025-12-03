@@ -4,8 +4,9 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, Any, Dict
 
-# OJO: tu process_query está en app/query_data.py
+
 from IA.query_data import process_query
+from IA.red_contac import process_query_graph
 
 router = APIRouter(
     prefix="/ai",
@@ -29,3 +30,12 @@ def ai_query(payload: QueryRequest) -> Dict[str, Any]:
     )
     # process_query ya devuelve un dict con {answer, sql_query, ...}
     return resp
+
+
+class GraphQuery(BaseModel):
+    query_text: str
+    debug: bool = False
+
+@router.post("/graphs/assistant")
+def graphs_assistant(body: GraphQuery):
+    return process_query_graph(body.query_text, debug=body.debug)

@@ -18,8 +18,13 @@ try:
 except Exception:
     HAS_GAP_FECHA = False
 
+try:
+    from .flag_horas import run_flag_hora_1159_for_one as _run_hora_1159_one
+    HAS_HORA_1159 = True
+except Exception:
+    HAS_HORA_1159 = False
 
-# ---- NUEVO: separar flujos computables vs interactivos ----
+
 def get_computable_flows() -> List[str]:
     """
     Flujos que NO requieren payload externo (se pueden correr en batch).
@@ -29,6 +34,9 @@ def get_computable_flows() -> List[str]:
         base.append("red_precio")
     if HAS_GAP_FECHA:
         base.append("gap_fechas")
+    if HAS_HORA_1159:
+        base.append("hora_1159")
+
     return base
 
 def get_interactive_flows() -> List[str]:
@@ -85,7 +93,12 @@ def _run_one_flow(db: Session, lic_id: int, flow: str, json_override: Optional[d
             "flow": "gap_fechas",
             "result": _run_gap_fecha_one(db, lic_id, json_override=json_override or {}),
         }
-
+        
+    if flow == "hora_1159" and HAS_HORA_1159:
+        return {
+            "flow": "hora_1159",
+            "result": _run_hora_1159_one(db, lic_id, json_override=json_override or {}),
+        }
     raise ValueError(f"Flow desconocido o no disponible: {flow}")
 
 

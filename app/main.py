@@ -6,18 +6,16 @@ from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, Depends, HTTPException, Query, Body
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 from db.deps import get_db
 from db import repo
 from db.schema import Licitacion, Flags, FlagsLicitaciones, FlagsLog, LicitacionChunk, LicitacionKeymap
 from pipes.pipeline import get_available_flows, run_flow_for_one, run_flow_batch
-api = FastAPI(title="Licita API", version="1.0.0")
-
-from sqlalchemy import text
 
 from ai_router import router as ai_router
 
-
+api = FastAPI(title="Licita API", version="1.0.0")
 
 
 api.include_router(ai_router)
@@ -42,12 +40,16 @@ def index():
             "/pipelines/run/{licitacion_id}",
             "/pipelines/batch",
             "/pipes/red-contactos/run",
-            "/pipes/flags/{flag_code}/run/{licitacion_id}"
-
+            "/pipes/red-contactos/run-v2",
+            "/pipes/flags/{flag_code}/run/{licitacion_id}",
+            "/ai/query",
+            "/ai/graphs/assistant",
         ],
     }
 
+
 # --------- Schemas ----------
+
 class LicitacionIn(BaseModel):
     entidad: str
     objeto: Optional[str] = None
@@ -62,18 +64,15 @@ class LicitacionIn(BaseModel):
     portal_origen: Optional[str] = None
     texto_indexado: Optional[str] = None
 
+
 class FlagSetIn(BaseModel):
     flag_codigo: str = Field(..., examples=["red1"])
     valor: bool
     comentario: Optional[str] = None
     fuente: Optional[str] = "manual"
 
-# --------- Rutas básicas ----------
-# @api.post("/licitaciones", response_model=dict)
-# def create(lic_in: LicitacionIn, db: Session = Depends(get_db)):
-#     lic = repo.create_licitacion(db, **lic_in.model_dump())
-#     return {"id": lic.id}
 
+# --------- Rutas básicas ----------
 
 @api.post("/licitaciones", response_model=dict)
 def create(lic_in: LicitacionIn, db: Session = Depends(get_db)):
@@ -96,6 +95,7 @@ def search(q: str, limit: int = 50, db: Session = Depends(get_db)):
         for x in rows
     ]
 
+
 @api.post("/flags/{licitacion_id}", response_model=dict)
 def set_flag(licitacion_id: int, body: FlagSetIn, db: Session = Depends(get_db)):
     lic: Licitacion | None = db.get(Licitacion, licitacion_id)
@@ -111,18 +111,22 @@ def set_flag(licitacion_id: int, body: FlagSetIn, db: Session = Depends(get_db))
         fuente=body.fuente,
         usuario_log="api",
     )
-    db.commit()  # ←←← clave para persistir
+    db.commit()
     return {"flags_licitaciones_id": fli.id, "ok": True}
 
+
 # --------- Orquestador ----------
+
 class BatchRequest(BaseModel):
     flow: str = "all"
     where: Optional[str] = None
     limit: Optional[int] = None
 
+
 @api.get("/pipelines/flows", response_model=List[str])
 def list_flows():
     return get_available_flows()
+
 
 @api.post("/pipelines/run/{licitacion_id}", response_model=dict)
 def run_pipeline_one(
@@ -134,6 +138,7 @@ def run_pipeline_one(
         return run_flow_for_one(db, licitacion_id, flow=flow)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @api.post("/pipelines/batch", response_model=List[dict])
 def run_pipeline_batch_ep(
@@ -150,14 +155,18 @@ def run_pipeline_batch_ep(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
 # --------- Red de contactos (JSON in-memory) ----------
+
 class PersonasPayload(BaseModel):
     personas: List[Dict[str, Any]]
     contratistas: Optional[List[str]] = None
 
+
 class RunRedContactosRequest(BaseModel):
     licitacion_ids: List[int]
     data: PersonasPayload
+
 
 @api.post("/pipes/red-contactos/run", response_model=List[dict])
 def run_red_contactos_endpoint(
@@ -171,8 +180,10 @@ def run_red_contactos_endpoint(
         json_override=payload.data.model_dump(),
     )
 
+
 class OneFlagRequest(BaseModel):
     json_override: Optional[Dict[str, Any]] = None
+
 
 @api.post("/pipes/flags/{flag_code}/run/{licitacion_id}", response_model=dict)
 def run_one_flag_endpoint(
@@ -185,20 +196,26 @@ def run_one_flag_endpoint(
         "red_precio": "red_precio",
         "gap_fechas": "gap_fechas",
         "red_contactos": "red_contactos",
+        "hora_1159": "hora_1159", 
     }
     flow = aliases.get(flag_code)
     if not flow:
         raise HTTPException(status_code=400, detail=f"Flag desconocido: {flag_code}")
 
     try:
-        result = run_flow_for_one(db, licitacion_id, flow=flow, json_override=payload.json_override or {})
+        result = run_flow_for_one(
+            db,
+            licitacion_id,
+            flow=flow,
+            json_override=payload.json_override or {},
+        )
         return {"ok": True, "flow": flow, "result": result}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
-
 # --------- Red de contactos V2 (aprobadores + personas) ----------
+
 class Trabajo(BaseModel):
     cargo: str
     entidad: str
@@ -206,11 +223,13 @@ class Trabajo(BaseModel):
     anio_fin: int
     descripcion: Optional[str] = None
 
+
 class Conexion(BaseModel):
     con_id: Optional[str] = None
     con_nombre: Optional[str] = None
     tipo: Optional[str] = None
     fuente: Optional[str] = None
+
 
 class PersonaV2(BaseModel):
     id: str
@@ -220,6 +239,7 @@ class PersonaV2(BaseModel):
     es_contratista: bool = False
     trabajos: List[Trabajo] = []
     conexiones: List[Conexion] = []
+
 
 class Aprobador(BaseModel):
     licitacion_id: int
@@ -231,20 +251,23 @@ class Aprobador(BaseModel):
     identificacion: Optional[str] = None
     correo: Optional[str] = None
 
+
 class PersonasPayloadV2(BaseModel):
     aprobadores: List[Aprobador]
     personas: List[PersonaV2]
 
+
 class RunRedContactosV2(BaseModel):
     licitacion_id: int
     data: PersonasPayloadV2
+
 
 @api.post("/pipes/red-contactos/run-v2", response_model=dict)
 def run_red_contactos_v2(
     payload: RunRedContactosV2,
     db: Session = Depends(get_db),
 ):
-    # Usa el mismo pipe pero pasando json_override con la nueva estructura
+   
     return run_flow_for_one(
         db,
         payload.licitacion_id,

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from db import repo  # para registrar en flags_licitaciones
 
-# ¡OJO! máximo 10 caracteres porque tu columna es varchar(10)
+
 FLAG_CODE = "gap_fecha"   # 9 chars, estilo de tus otras flags
 FLAG_NAME = "Gap de fechas"
 FLAG_DESC = (

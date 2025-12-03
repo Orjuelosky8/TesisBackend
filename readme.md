@@ -8,8 +8,8 @@ docker compose exec app python /app/scripts/run_pipeline_batch.py --flow red_pre
 
 *Correr flag redContactos:
 docker compose exec app python /app/scripts/run_pipeline_batch.py `
-  --flow red_contactos `
-  --ids 101,102,103 `
+  --flow red_contactos_data `
+  --ids 10,102,1000 `
   --json-file /app/scripts/red_contactos.json
 
 
