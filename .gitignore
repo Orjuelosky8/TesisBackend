@@ -9,3 +9,4 @@ backups/
 *.7z
 *.zip
 .env
+venv/

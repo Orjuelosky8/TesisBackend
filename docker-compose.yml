@@ -14,8 +14,6 @@ services:
       - db_data:/var/lib/postgresql/data
       - ./init-db.sh:/docker-entrypoint-initdb.d/01-init-db.sh:ro
       - ./backups/rag_db_20251029_222349.dump:/docker-entrypoint-initdb.d/backup.dump:ro
-
-
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -41,31 +39,6 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     networks: [backend]
 
-  # ----------------------------------------------------------------------
-  #  FLYWAY (NO LO NECESITAS AHORA)
-  # Dejar comentado. En producción normalmente no se usa si ya restauras un dump completo.
-  # Si algún día quieres volver a Flyway, descomenta ambos servicios y apunta a /Db/migrations.
-  # ----------------------------------------------------------------------
-  flyway_init:
-     image: flyway/flyway:10
-     depends_on:
-       db:
-         condition: service_healthy
-     environment:
-       FLYWAY_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
-       FLYWAY_USER: ${POSTGRES_USER}
-       FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
-       FLYWAY_CONNECT_RETRIES: 60
-       FLYWAY_DEFAULT_SCHEMA: public
-       TZ: America/Bogota
-      
-       # FLYWAY_TARGET: 6 # !!!!!!!!!!  numero de versiones "V__"
-     command: -locations=filesystem:/flyway/sql migrate
-     volumes:
-       - ./Db/migrations:/flyway/sql:ro
-     networks: [ backend ]
-
-
   app:
     build:
       context: ./app
@@ -77,7 +50,6 @@ services:
     env_file:
       - .env
     environment:
-    
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       TZ: America/Bogota
     ports:
@@ -92,36 +64,3 @@ volumes:
 networks:
   backend:
     driver: bridge
-
-
-
-  # ----------------------------------------------------------------------
-  #  PGLOADER 
-  # Dejar comentado. Sirve para importar un .db de SQLite → Postgres (staging).
-  #
-      # ----------------------------------------------------------------------
-
-  # ----------------------------------------------------------------------
-  # FLYWAY DESPUÉS DEL LOADER 
-  # Dejar comentado por los mismos motivos.
-  # ----------------------------------------------------------------------
-  # flyway:
-  #   image: flyway/flyway:10
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   environment:
-  #     FLYWAY_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
-  #     FLYWAY_USER: ${POSTGRES_USER}
-  #     FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
-  #     FLYWAY_CONNECT_RETRIES: 60
-  #     FLYWAY_DEFAULT_SCHEMA: public
-  #     FLYWAY_BASELINE_ON_MIGRATE: "true"   # útil si la BD ya tiene objetos
-  #     TZ: America/Bogota
-  #   # volumes:
-  #   #   - ./Db/migrations:/flyway/sql:ro     # aquí van tus V2025__*.sql
-  #   command: -locations=filesystem:/flyway/sql migrate
-  #   networks: [ backend ]
-
-
- 
