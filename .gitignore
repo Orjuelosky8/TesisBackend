@@ -8,3 +8,4 @@ backups/
 *.gz
 *.7z
 *.zip
+.env
